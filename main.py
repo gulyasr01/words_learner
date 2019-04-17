@@ -1,18 +1,13 @@
-import pandas as pd
 import word as wd
-import os
-import numpy as np
-
-words_list = []
-files = os.listdir('vocab')
-for i in files:
-    wi = pd.read_csv('vocab/'+i, header=None)
-    for j in range(wi.shape[0]):
-        words_list.append(wd.Word(wi, j))
+from tkinter import *
 
 
-w1 = pd.read_csv('vocab/words_19_03_10.csv', header=None)
+words = wd.fill_vocab()
 
-l1 = wd.Word(w1, 0)
+top = Tk()
+text1 = Text(top)
+text1.insert(END, words[0].mean2.iloc[1])
+text1.pack()
+top.mainloop()
 
-print(words_list[11].mean2)
+print(words[0].mean2)
