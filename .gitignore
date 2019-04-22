@@ -86,5 +86,6 @@ fabric.properties
 
 # Ignore the vocab folder
 vocab/
+words/
 
 # End of https://www.gitignore.io/api/pycharm

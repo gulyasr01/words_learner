@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-import math
 
 
 # make a word object from a specified row of the csv
@@ -20,9 +19,9 @@ class Word:
 # fill the vocablurafy from the csvs in the 'vocab' directory
 def fill_vocab():
     words_list = []
-    files = os.listdir('vocab')
+    files = os.listdir('words')
     for i in files:
-        wi = pd.read_csv('vocab/' + i, header=None)
+        wi = pd.read_excel('words/' + i, header=None)
         for j in range(wi.shape[0]):
             words_list.append(Word(wi, j))
     return words_list
