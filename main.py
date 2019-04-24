@@ -15,15 +15,24 @@ disp_mode = 0
 
 
 def set_eng():
-    disp_mode = 0
+    global disp_mode
+    global next_state
+    next_state = 0
+    disp_mode = "eng"
 
 
 def set_hun_one_mean():
-    disp_mode = 1
+    global disp_mode
+    global next_state
+    next_state = 0
+    disp_mode = "hun_one"
 
 
 def set_hun_all_mean():
-    disp_mode = 2
+    global disp_mode
+    global next_state
+    next_state = 0
+    disp_mode = "hun_all"
 
 
 menu.add_command(label="English", command=set_eng)
@@ -44,16 +53,42 @@ word_index = 0
 def rand_word():
     global next_state
     global word_index
+    global disp_mode
     text_word.delete("1.0", "end")
-    if next_state == 0:
-        word_index = randint(0, vocab_len-1)
-        update = words[word_index].mean2.iloc[0]
-        text_word.insert(END, update)
-        next_state = 1
+    if disp_mode == "hun_all":
+        if next_state == 0:
+            word_index = randint(0, vocab_len-1)
+            update = ""
+            for i in words[word_index].mean2:
+                update = update + i + "\n"
+            text_word.insert(END, update)
+            next_state = 1
+        else:
+            update = words[word_index].mean1
+            text_word.insert(END, update)
+            next_state = 0
+    elif disp_mode == "hun_one":
+        if next_state == 0:
+            word_index = randint(0, vocab_len-1)
+            update = words[word_index].mean2.iloc[randint(0, len(words[word_index].mean2) - 1)]
+            text_word.insert(END, update)
+            next_state = 1
+        else:
+            update = words[word_index].mean1
+            text_word.insert(END, update)
+            next_state = 0
     else:
-        update = words[word_index].mean1
-        text_word.insert(END, update)
-        next_state = 0
+        if next_state == 0:
+            word_index = randint(0, vocab_len-1)
+            update = words[word_index].mean1
+            text_word.insert(END, update)
+            next_state = 1
+        else:
+            update = ""
+            for i in words[word_index].mean2:
+                update = update + i + "\n"
+            text_word.insert(END, update)
+            next_state = 0
 
 
 # btn_next will display the next word (or show the actuals meaning)
