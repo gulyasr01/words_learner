@@ -1,6 +1,6 @@
 import word as wd
 from tkinter import *
-from random import randint
+import random
 
 # fill the words array from file
 words = wd.fill_vocab()
@@ -48,16 +48,19 @@ text_word.pack(side=RIGHT)
 vocab_len = len(words)
 next_state = 0
 word_index = 0
+word_order = list(range(vocab_len))
+random.shuffle(word_order)
 
 
 def rand_word():
     global next_state
     global word_index
     global disp_mode
+    print("index: " + str(word_index))
+    print("word num: " + str(word_order.index(word_index)))
     text_word.delete("1.0", "end")
     if disp_mode == "hun_all":
         if next_state == 0:
-            word_index = randint(0, vocab_len-1)
             update = ""
             for i in words[word_index].mean2:
                 update = update + i + "\n"
@@ -67,19 +70,19 @@ def rand_word():
             update = words[word_index].mean1
             text_word.insert(END, update)
             next_state = 0
+            word_index += 1
     elif disp_mode == "hun_one":
         if next_state == 0:
-            word_index = randint(0, vocab_len-1)
-            update = words[word_index].mean2.iloc[randint(0, len(words[word_index].mean2) - 1)]
+            update = words[word_index].mean2.iloc[random.randint(0, len(words[word_index].mean2) - 1)]
             text_word.insert(END, update)
             next_state = 1
         else:
             update = words[word_index].mean1
             text_word.insert(END, update)
             next_state = 0
+            word_index += 1
     else:
         if next_state == 0:
-            word_index = randint(0, vocab_len-1)
             update = words[word_index].mean1
             text_word.insert(END, update)
             next_state = 1
@@ -89,12 +92,28 @@ def rand_word():
                 update = update + i + "\n"
             text_word.insert(END, update)
             next_state = 0
+            word_index += 1
+
+
+def reset_order():
+    global next_state
+    global word_index
+    global word_order
+    word_index = 0
+    next_state = 0
+    word_order = list(range(vocab_len))
+    random.shuffle(word_order)
 
 
 # btn_next will display the next word (or show the actuals meaning)
 btn_next = Button(top, text="Next", fg="black")
-btn_next.pack(side=LEFT)
+btn_next.pack(fill=X)
 btn_next.configure(command=rand_word)
+
+# btn_reset will start from the beginning the full word interrogate cycle ang generating the random order
+btn_reset = Button(top, text="Reset", fg="red")
+btn_reset.pack(fill=X)
+btn_reset.configure(command=reset_order)
 
 
 top.mainloop()
