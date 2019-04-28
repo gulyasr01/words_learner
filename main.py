@@ -42,7 +42,8 @@ top.config(menu=menu)
 
 # text_word displays the actual word
 text_word = Text(top)
-text_word.pack(side=RIGHT)
+text_word.config(height=3, width=20)
+text_word.grid(row=0, column=1, rowspan=2)
 
 
 vocab_len = len(words)
@@ -107,12 +108,12 @@ def reset_order():
 
 # btn_next will display the next word (or show the actuals meaning)
 btn_next = Button(top, text="Next", fg="black")
-btn_next.pack(fill=X)
+btn_next.grid(row=0, column=0)
 btn_next.configure(command=rand_word)
 
 # btn_reset will start from the beginning the full word interrogate cycle ang generating the random order
 btn_reset = Button(top, text="Reset", fg="red")
-btn_reset.pack(fill=X)
+btn_reset.grid(row=1, column=0)
 btn_reset.configure(command=reset_order)
 
 
