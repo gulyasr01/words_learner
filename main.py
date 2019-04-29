@@ -19,6 +19,7 @@ def set_eng():
     global next_state
     next_state = 0
     disp_mode = "eng"
+    update_status()
 
 
 def set_hun_one_mean():
@@ -26,6 +27,7 @@ def set_hun_one_mean():
     global next_state
     next_state = 0
     disp_mode = "hun_one"
+    update_status()
 
 
 def set_hun_all_mean():
@@ -33,6 +35,7 @@ def set_hun_all_mean():
     global next_state
     next_state = 0
     disp_mode = "hun_all"
+    update_status()
 
 
 menu.add_command(label="English", command=set_eng)
@@ -50,11 +53,32 @@ text_meaning = Text(top)
 text_meaning.config(height=3, width=20)
 text_meaning.grid(row=1, column=2, rowspan=2)
 
+# text_status displays some information about the current interogation
+text_status = Text(top)
+text_status.config(height=3, width=20)
+text_status.grid(row=1, column=3, rowspan=2)
+
+
+def update_status():
+    global disp_mode
+    global vocab_len
+    text_status.delete("1.0", "end")
+    text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode))
+
+
+# labels
 label_ask = Label(top, text="Asking:")
 label_ask.grid(row=0, column=1)
 
 label_mean = Label(top, text="Meaning:")
 label_mean.grid(row=0, column=2)
+
+label_status = Label(top, text="Status:")
+label_status.grid(row=0, column=3)
+
+label_remaining = Label(top, text="Remaining:")
+label_remaining.grid(row=3, column=0)
+
 
 vocab_len = len(words)
 next_state = 0
@@ -72,12 +96,12 @@ def rand_word():
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
             update_word = ""
-            for i in words[word_index].mean2:
+            for i in words[word_order.index(word_index)].mean2:
                 update_word = update_word + i + "\n"
             text_word.insert(END, update_word)
             next_state = 1
         else:
-            update_meaning = words[word_index].mean1
+            update_meaning = words[word_order.index(word_index)].mean1
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -85,11 +109,11 @@ def rand_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
-            update_word = words[word_index].mean2.iloc[random.randint(0, len(words[word_index].mean2) - 1)]
+            update_word = words[word_order.index(word_index)].mean2.iloc[random.randint(0, len(words[word_order.index(word_index)].mean2) - 1)]
             text_word.insert(END, update_word)
             next_state = 1
         else:
-            update_meaning = words[word_index].mean1
+            update_meaning = words[word_order.index(word_index)].mean1
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -97,12 +121,12 @@ def rand_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
-            update_word = words[word_index].mean1
+            update_word = words[word_order.index(word_index)].mean1
             text_word.insert(END, update_word)
             next_state = 1
         else:
             update_meaning = ""
-            for i in words[word_index].mean2:
+            for i in words[word_order.index(word_index)].mean2:
                 update_meaning = update_meaning + i + "\n"
             text_meaning.insert(END, update_meaning)
             next_state = 0
@@ -131,6 +155,9 @@ btn_reset = Button(top, text="Reset", fg="red")
 btn_reset.grid(row=2, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
+# initialize the states
+disp_mode = "eng"
+update_status()
 
 top.mainloop()
 
