@@ -8,8 +8,21 @@ words = wd.fill_vocab()
 # gui
 top = Tk()
 
-# pop-up menu
-menu = Menu(top)
+
+def menu_callback(select):
+    if select == "Eng":
+        set_eng()
+    elif select == "Hun one":
+        set_hun_one_mean()
+    elif select == "Hun all":
+        set_hun_all_mean()
+
+
+options = StringVar()
+menu = OptionMenu(top, options, "Eng", "Hun one", "Hun all", command=menu_callback)
+menu.config(width=8)
+menu.grid(row=0, column=0, sticky="ew")
+options.set("Eng")
 
 disp_mode = "eng"
 
@@ -38,25 +51,20 @@ def set_hun_all_mean():
     update_status()
 
 
-menu.add_command(label="English", command=set_eng)
-menu.add_command(label="Hun one meaning", command=set_hun_one_mean)
-menu.add_command(label="Hun all meanings", command=set_hun_all_mean)
-top.config(menu=menu)
-
 # text_word displays the actual word
 text_word = Text(top)
 text_word.config(height=3, width=20)
-text_word.grid(row=1, column=1, rowspan=2)
+text_word.grid(row=2, column=1, rowspan=2)
 
 # text_word displays the actual word meaning
 text_meaning = Text(top)
 text_meaning.config(height=3, width=20)
-text_meaning.grid(row=1, column=2, rowspan=2)
+text_meaning.grid(row=2, column=2, rowspan=2)
 
 # text_status displays some information about the current interogation
 text_status = Text(top)
 text_status.config(height=3, width=20)
-text_status.grid(row=1, column=3, rowspan=2)
+text_status.grid(row=2, column=3, rowspan=2)
 
 
 def update_status():
@@ -69,13 +77,13 @@ def update_status():
 
 # labels
 label_ask = Label(top, text="Asking:")
-label_ask.grid(row=0, column=1)
+label_ask.grid(row=1, column=1)
 
 label_mean = Label(top, text="Meaning:")
-label_mean.grid(row=0, column=2)
+label_mean.grid(row=1, column=2)
 
 label_status = Label(top, text="Status:")
-label_status.grid(row=0, column=3)
+label_status.grid(row=1, column=3)
 
 vocab_len = len(words)
 next_state = 0
@@ -148,12 +156,12 @@ def reset_order():
 
 # btn_next will display the next word (or show the actuals meaning)
 btn_next = Button(top, text="Next", fg="black")
-btn_next.grid(row=1, column=0, sticky="ew")
+btn_next.grid(row=2, column=0, sticky="ew")
 btn_next.configure(command=rand_word)
 
 # btn_reset will start from the beginning the full word interrogate cycle ang generating the random order
 btn_reset = Button(top, text="Reset", fg="red")
-btn_reset.grid(row=2, column=0, sticky="ew")
+btn_reset.grid(row=3, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
 # initialize the states
