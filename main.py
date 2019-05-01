@@ -11,7 +11,7 @@ top = Tk()
 # pop-up menu
 menu = Menu(top)
 
-disp_mode = 0
+disp_mode = "eng"
 
 
 def set_eng():
@@ -62,8 +62,9 @@ text_status.grid(row=1, column=3, rowspan=2)
 def update_status():
     global disp_mode
     global vocab_len
+    global word_index
     text_status.delete("1.0", "end")
-    text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode))
+    text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode) + "\nReamaining: " + str(vocab_len-word_index))
 
 
 # labels
@@ -75,10 +76,6 @@ label_mean.grid(row=0, column=2)
 
 label_status = Label(top, text="Status:")
 label_status.grid(row=0, column=3)
-
-label_remaining = Label(top, text="Remaining:")
-label_remaining.grid(row=3, column=0)
-
 
 vocab_len = len(words)
 next_state = 0
@@ -100,6 +97,7 @@ def rand_word():
                 update_word = update_word + i + "\n"
             text_word.insert(END, update_word)
             next_state = 1
+            update_status()
         else:
             update_meaning = words[word_order.index(word_index)].mean1
             text_meaning.insert(END, update_meaning)
@@ -112,6 +110,7 @@ def rand_word():
             update_word = words[word_order.index(word_index)].mean2.iloc[random.randint(0, len(words[word_order.index(word_index)].mean2) - 1)]
             text_word.insert(END, update_word)
             next_state = 1
+            update_status()
         else:
             update_meaning = words[word_order.index(word_index)].mean1
             text_meaning.insert(END, update_meaning)
@@ -124,6 +123,7 @@ def rand_word():
             update_word = words[word_order.index(word_index)].mean1
             text_word.insert(END, update_word)
             next_state = 1
+            update_status()
         else:
             update_meaning = ""
             for i in words[word_order.index(word_index)].mean2:
@@ -143,6 +143,7 @@ def reset_order():
     random.shuffle(word_order)
     text_word.delete("1.0", "end")
     text_meaning.delete("1.0", "end")
+    update_status()
 
 
 # btn_next will display the next word (or show the actuals meaning)
@@ -156,8 +157,6 @@ btn_reset.grid(row=2, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
 # initialize the states
-disp_mode = "eng"
 update_status()
 
 top.mainloop()
-
