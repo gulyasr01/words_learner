@@ -1,12 +1,43 @@
 import word as wd
 from tkinter import *
 import random
+import pandas as pd
 
 # fill the words array from file
-words = wd.create_df()
+#words = wd.create_df()
 
 # gui
 top = Tk()
+
+
+def create_new():
+    global words
+    global vocab_len
+    words = wd.create_df()
+    vocab_len = words.shape[0]
+    reset_order()
+    update_status()
+
+
+def load_df():
+    global words
+    global vocab_len
+    words = pd.read_pickle('vocab/dict.pkl')
+    vocab_len = words.shape[0]
+    reset_order()
+    update_status()
+
+
+def save_df():
+    global words
+    words.to_pickle('vocab/dict.pkl')
+
+
+menubar = Menu(top)
+menubar.add_command(label="Create", command=create_new)
+menubar.add_command(label="Load", command=load_df)
+menubar.add_command(label="Save", command=save_df)
+top.config(menu=menubar)
 
 
 def menu_callback(select):
@@ -23,7 +54,6 @@ menu = OptionMenu(top, options, "Eng", "Hun one", "Hun all", command=menu_callba
 menu.config(width=8)
 menu.grid(row=0, column=0, sticky="ew")
 options.set("Eng")
-
 disp_mode = "eng"
 
 
@@ -65,6 +95,7 @@ text_meaning.grid(row=2, column=2, rowspan=2)
 text_status = Text(top)
 text_status.config(height=3, width=20)
 text_status.grid(row=2, column=3, rowspan=2)
+text_status.insert(END, "Create or load!")
 
 
 def update_status():
@@ -85,11 +116,8 @@ label_mean.grid(row=1, column=2)
 label_status = Label(top, text="Status:")
 label_status.grid(row=1, column=3)
 
-vocab_len = words.shape[0]
 next_state = 0
 word_index = 0
-word_order = list(range(vocab_len))
-random.shuffle(word_order)
 
 
 def next_word():
@@ -168,7 +196,5 @@ btn_reset = Button(top, text="Reset", fg="red")
 btn_reset.grid(row=3, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
-# initialize the states
-update_status()
 
 top.mainloop()
