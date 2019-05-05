@@ -3,7 +3,7 @@ from tkinter import *
 import random
 
 # fill the words array from file
-words = wd.fill_vocab()
+words = wd.create_df()
 
 # gui
 top = Tk()
@@ -85,14 +85,14 @@ label_mean.grid(row=1, column=2)
 label_status = Label(top, text="Status:")
 label_status.grid(row=1, column=3)
 
-vocab_len = len(words)
+vocab_len = words.shape[0]
 next_state = 0
 word_index = 0
 word_order = list(range(vocab_len))
 random.shuffle(word_order)
 
 
-def rand_word():
+def next_word():
     global next_state
     global word_index
     global disp_mode
@@ -100,14 +100,15 @@ def rand_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
+            # print all the hun meanings in new lines
             update_word = ""
-            for i in words[word_order.index(word_index)].mean2:
+            for i in words.loc[words.index[word_order.index(word_index)], 'hun']:
                 update_word = update_word + i + "\n"
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
-            update_meaning = words[word_order.index(word_index)].mean1
+            update_meaning = words.loc[words.index[word_order.index(word_index)], 'eng']
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -115,12 +116,14 @@ def rand_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
-            update_word = words[word_order.index(word_index)].mean2.iloc[random.randint(0, len(words[word_order.index(word_index)].mean2) - 1)]
+            # select one of the hun meanings
+            hun = words.loc[words.index[word_order.index(word_index)], 'hun']
+            update_word = hun[random.randint(0, len(hun)-1)]
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
-            update_meaning = words[word_order.index(word_index)].mean1
+            update_meaning = words.loc[words.index[word_order.index(word_index)], 'eng']
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -128,13 +131,14 @@ def rand_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
-            update_word = words[word_order.index(word_index)].mean1
+            update_word = words.loc[words.index[word_order.index(word_index)], 'eng']
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
+            # print all the hun meanings in new lines
             update_meaning = ""
-            for i in words[word_order.index(word_index)].mean2:
+            for i in words.loc[words.index[word_order.index(word_index)], 'hun']:
                 update_meaning = update_meaning + i + "\n"
             text_meaning.insert(END, update_meaning)
             next_state = 0
@@ -157,7 +161,7 @@ def reset_order():
 # btn_next will display the next word (or show the actuals meaning)
 btn_next = Button(top, text="Next", fg="black")
 btn_next.grid(row=2, column=0, sticky="ew")
-btn_next.configure(command=rand_word)
+btn_next.configure(command=next_word)
 
 # btn_reset will start from the beginning the full word interrogate cycle ang generating the random order
 btn_reset = Button(top, text="Reset", fg="red")
