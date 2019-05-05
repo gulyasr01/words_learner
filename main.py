@@ -10,6 +10,7 @@ import pandas as pd
 top = Tk()
 
 
+# menu to select the actual dataset
 def create_new():
     global words
     global vocab_len
@@ -40,6 +41,7 @@ menubar.add_command(label="Save", command=save_df)
 top.config(menu=menubar)
 
 
+# menu to select the interrogation mode
 def menu_callback(select):
     if select == "Eng":
         set_eng()
@@ -80,6 +82,17 @@ def set_hun_all_mean():
     disp_mode = "hun_all"
     update_status()
 
+
+# menu to select the random generation mode
+def menu_rand_callback(select):
+    print(select)
+
+
+opts_rand = StringVar()
+menu_rand = OptionMenu(top, opts_rand, "Random", "Decrease", command=menu_rand_callback)
+menu_rand.config(width=8)
+menu_rand.grid(row=0, column=1, sticky="w")
+opts_rand.set("Random")
 
 # text_word displays the actual word
 text_word = Text(top)
@@ -196,5 +209,23 @@ btn_reset = Button(top, text="Reset", fg="red")
 btn_reset.grid(row=3, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
+
+# btn to increase score
+def inc_score():
+    print("inc")
+
+
+def dec_score():
+    print("dec")
+
+
+btn_plus = Button(top, text="+", fg="black")
+btn_plus.grid(row=4, column=0, sticky="ew")
+btn_plus.configure(command=inc_score())
+
+# btn to decrease score
+btn_minus = Button(top, text="-", fg="black")
+btn_minus.grid(row=5, column=0, sticky="ew")
+btn_minus.configure(command=dec_score())
 
 top.mainloop()
