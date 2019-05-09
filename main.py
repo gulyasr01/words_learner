@@ -3,8 +3,6 @@ from tkinter import *
 import random
 import pandas as pd
 
-# fill the words array from file
-#words = wd.create_df()
 
 # gui
 top = Tk()
@@ -84,8 +82,15 @@ def set_hun_all_mean():
 
 
 # menu to select the random generation mode
+random_mode = "full"
+
+
 def menu_rand_callback(select):
-    print(select)
+    global random_mode
+    if select == "Random":
+        random_mode = "full"
+    elif select == "Decrease":
+        random_mode = "decrease"
 
 
 opts_rand = StringVar()
@@ -189,14 +194,28 @@ def next_word():
 def reset_order():
     global next_state
     global word_index
-    global word_order
+    global random_mode
     word_index = 0
     next_state = 0
-    word_order = list(range(vocab_len))
-    random.shuffle(word_order)
+    if random_mode == "full":
+        full_rand()
+    elif random_mode == "decrease":
+        decrease_rand()
     text_word.delete("1.0", "end")
     text_meaning.delete("1.0", "end")
     update_status()
+
+
+def full_rand():
+    global word_order
+    word_order = list(range(vocab_len))
+    random.shuffle(word_order)
+
+
+def decrease_rand():
+    global word_order
+    global words
+    dec_ord = words['score'].sort_values(by=['score'])
 
 
 # btn_next will display the next word (or show the actuals meaning)
