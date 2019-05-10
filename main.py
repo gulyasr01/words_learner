@@ -148,13 +148,13 @@ def next_word():
             text_meaning.delete("1.0", "end")
             # print all the hun meanings in new lines
             update_word = ""
-            for i in words.loc[words.index[word_order.index(word_index)], 'hun']:
+            for i in words.loc[words.index[word_index], 'hun']:
                 update_word = update_word + i + "\n"
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
-            update_meaning = words.loc[words.index[word_order.index(word_index)], 'eng']
+            update_meaning = words.loc[words.index[word_index], 'eng']
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -163,13 +163,13 @@ def next_word():
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
             # select one of the hun meanings
-            hun = words.loc[words.index[word_order.index(word_index)], 'hun']
+            hun = words.loc[words.index[word_index], 'hun']
             update_word = hun[random.randint(0, len(hun)-1)]
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
-            update_meaning = words.loc[words.index[word_order.index(word_index)], 'eng']
+            update_meaning = words.loc[words.index[word_index], 'eng']
             text_meaning.insert(END, update_meaning)
             next_state = 0
             word_index += 1
@@ -177,14 +177,14 @@ def next_word():
         if next_state == 0:
             text_word.delete("1.0", "end")
             text_meaning.delete("1.0", "end")
-            update_word = words.loc[words.index[word_order.index(word_index)], 'eng']
+            update_word = words.loc[words.index[word_index], 'eng']
             text_word.insert(END, update_word)
             next_state = 1
             update_status()
         else:
             # print all the hun meanings in new lines
             update_meaning = ""
-            for i in words.loc[words.index[word_order.index(word_index)], 'hun']:
+            for i in words.loc[words.index[word_index], 'hun']:
                 update_meaning = update_meaning + i + "\n"
             text_meaning.insert(END, update_meaning)
             next_state = 0
@@ -207,15 +207,14 @@ def reset_order():
 
 
 def full_rand():
-    global word_order
-    word_order = list(range(vocab_len))
-    random.shuffle(word_order)
+    global words
+    words = words.sample(frac=1).reset_index(drop=True)
 
 
 def decrease_rand():
-    global word_order
     global words
-    dec_ord = words['score'].sort_values(by=['score'])
+    words = words.sample(frac=1).reset_index(drop=True)
+    words = words.sort_values(by='score', ascending=False)
 
 
 # btn_next will display the next word (or show the actuals meaning)
@@ -231,20 +230,22 @@ btn_reset.configure(command=reset_order)
 
 # btn to increase score
 def inc_score():
-    print("inc")
+    global words
+    words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] + 1
 
 
 def dec_score():
-    print("dec")
+    global words
+    words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] - 1
 
 
 btn_plus = Button(top, text="+", fg="black")
 btn_plus.grid(row=4, column=0, sticky="ew")
-btn_plus.configure(command=inc_score())
+btn_plus.configure(command=inc_score)
 
 # btn to decrease score
 btn_minus = Button(top, text="-", fg="black")
 btn_minus.grid(row=5, column=0, sticky="ew")
-btn_minus.configure(command=dec_score())
+btn_minus.configure(command=dec_score)
 
 top.mainloop()
