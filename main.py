@@ -101,18 +101,18 @@ opts_rand.set("Random")
 
 # text_word displays the actual word
 text_word = Text(top)
-text_word.config(height=3, width=20)
-text_word.grid(row=2, column=1, rowspan=2)
+text_word.config(height=6, width=20)
+text_word.grid(row=2, column=1, rowspan=4)
 
 # text_word displays the actual word meaning
 text_meaning = Text(top)
-text_meaning.config(height=3, width=20)
-text_meaning.grid(row=2, column=2, rowspan=2)
+text_meaning.config(height=6, width=20)
+text_meaning.grid(row=2, column=2, rowspan=4)
 
 # text_status displays some information about the current interogation
 text_status = Text(top)
-text_status.config(height=3, width=20)
-text_status.grid(row=2, column=3, rowspan=2)
+text_status.config(height=6, width=20)
+text_status.grid(row=2, column=3, rowspan=4)
 text_status.insert(END, "Create or load!")
 
 
@@ -120,8 +120,10 @@ def update_status():
     global disp_mode
     global vocab_len
     global word_index
+    global words
     text_status.delete("1.0", "end")
-    text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode) + "\nReamaining: " + str(vocab_len-word_index))
+    text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode) + "\nReamaining: "
+                       + str(vocab_len-word_index) + "\nScore: " + str(words.loc[words.index[word_index], 'score']))
 
 
 # labels
@@ -214,7 +216,7 @@ def full_rand():
 def decrease_rand():
     global words
     words = words.sample(frac=1).reset_index(drop=True)
-    words = words.sort_values(by='score', ascending=False)
+    words = words.sort_values(by='score', ascending=False).reset_index(drop=True)
 
 
 # btn_next will display the next word (or show the actuals meaning)
@@ -224,7 +226,7 @@ btn_next.configure(command=next_word)
 
 # btn_reset will start from the beginning the full word interrogate cycle ang generating the random order
 btn_reset = Button(top, text="Reset", fg="red")
-btn_reset.grid(row=3, column=0, sticky="ew")
+btn_reset.grid(row=5, column=0, sticky="ew")
 btn_reset.configure(command=reset_order)
 
 
@@ -232,20 +234,22 @@ btn_reset.configure(command=reset_order)
 def inc_score():
     global words
     words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] + 1
+    next_word()
 
 
 def dec_score():
     global words
     words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] - 1
+    next_word()
 
 
 btn_plus = Button(top, text="+", fg="black")
-btn_plus.grid(row=4, column=0, sticky="ew")
+btn_plus.grid(row=3, column=0, sticky="ew")
 btn_plus.configure(command=inc_score)
 
 # btn to decrease score
 btn_minus = Button(top, text="-", fg="black")
-btn_minus.grid(row=5, column=0, sticky="ew")
+btn_minus.grid(row=4, column=0, sticky="ew")
 btn_minus.configure(command=dec_score)
 
 top.mainloop()
