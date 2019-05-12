@@ -216,7 +216,7 @@ def full_rand():
 def decrease_rand():
     global words
     words = words.sample(frac=1).reset_index(drop=True)
-    words = words.sort_values(by='score', ascending=False).reset_index(drop=True)
+    words = words.sort_values(by='score', ascending=True).reset_index(drop=True)
 
 
 # btn_next will display the next word (or show the actuals meaning)
@@ -233,13 +233,15 @@ btn_reset.configure(command=reset_order)
 # btn to increase score
 def inc_score():
     global words
-    words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] + 1
+    if next_state == 0:
+        words.loc[words.index[word_index-1], 'score'] = words.loc[words.index[word_index-1], 'score'] + 1
     next_word()
 
 
 def dec_score():
     global words
-    words.loc[words.index[word_index], 'score'] = words.loc[words.index[word_index], 'score'] - 1
+    if next_state == 0:
+        words.loc[words.index[word_index-1], 'score'] = words.loc[words.index[word_index-1], 'score'] - 1
     next_word()
 
 
