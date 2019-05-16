@@ -3,6 +3,8 @@ from tkinter import *
 import random
 import pandas as pd
 
+# global variables
+mistake = 0
 
 # gui
 top = Tk()
@@ -121,9 +123,11 @@ def update_status():
     global vocab_len
     global word_index
     global words
+    global mistake
     text_status.delete("1.0", "end")
     text_status.insert(END, "Size: " + str(vocab_len) + "\nMode: " + str(disp_mode) + "\nReamaining: "
-                       + str(vocab_len-word_index) + "\nScore: " + str(words.loc[words.index[word_index], 'score']))
+                       + str(vocab_len-word_index) + "\nScore: " + str(words.loc[words.index[word_index], 'score'])
+                       + "\nMiss: " + str(mistake))
 
 
 # labels
@@ -144,59 +148,66 @@ def next_word():
     global next_state
     global word_index
     global disp_mode
-    if disp_mode == "hun_all":
-        if next_state == 0:
-            text_word.delete("1.0", "end")
-            text_meaning.delete("1.0", "end")
-            # print all the hun meanings in new lines
-            update_word = ""
-            for i in words.loc[words.index[word_index], 'hun']:
-                update_word = update_word + i + "\n"
-            text_word.insert(END, update_word)
-            next_state = 1
-            update_status()
-        else:
-            update_meaning = words.loc[words.index[word_index], 'eng']
-            text_meaning.insert(END, update_meaning)
-            next_state = 0
-            word_index += 1
-    elif disp_mode == "hun_one":
-        if next_state == 0:
-            text_word.delete("1.0", "end")
-            text_meaning.delete("1.0", "end")
-            # select one of the hun meanings
-            hun = words.loc[words.index[word_index], 'hun']
-            update_word = hun[random.randint(0, len(hun)-1)]
-            text_word.insert(END, update_word)
-            next_state = 1
-            update_status()
-        else:
-            update_meaning = words.loc[words.index[word_index], 'eng']
-            text_meaning.insert(END, update_meaning)
-            next_state = 0
-            word_index += 1
+    global vocab_len
+    if word_index > (vocab_len - 1):
+        text_word.delete("1.0", "end")
+        text_meaning.delete("1.0", "end")
+        text_word.insert(END, "Done!")
     else:
-        if next_state == 0:
-            text_word.delete("1.0", "end")
-            text_meaning.delete("1.0", "end")
-            update_word = words.loc[words.index[word_index], 'eng']
-            text_word.insert(END, update_word)
-            next_state = 1
-            update_status()
+        if disp_mode == "hun_all":
+            if next_state == 0:
+                text_word.delete("1.0", "end")
+                text_meaning.delete("1.0", "end")
+                # print all the hun meanings in new lines
+                update_word = ""
+                for i in words.loc[words.index[word_index], 'hun']:
+                    update_word = update_word + i + "\n"
+                text_word.insert(END, update_word)
+                next_state = 1
+                update_status()
+            else:
+                update_meaning = words.loc[words.index[word_index], 'eng']
+                text_meaning.insert(END, update_meaning)
+                next_state = 0
+                word_index += 1
+        elif disp_mode == "hun_one":
+            if next_state == 0:
+                text_word.delete("1.0", "end")
+                text_meaning.delete("1.0", "end")
+                # select one of the hun meanings
+                hun = words.loc[words.index[word_index], 'hun']
+                update_word = hun[random.randint(0, len(hun)-1)]
+                text_word.insert(END, update_word)
+                next_state = 1
+                update_status()
+            else:
+                update_meaning = words.loc[words.index[word_index], 'eng']
+                text_meaning.insert(END, update_meaning)
+                next_state = 0
+                word_index += 1
         else:
-            # print all the hun meanings in new lines
-            update_meaning = ""
-            for i in words.loc[words.index[word_index], 'hun']:
-                update_meaning = update_meaning + i + "\n"
-            text_meaning.insert(END, update_meaning)
-            next_state = 0
-            word_index += 1
+            if next_state == 0:
+                text_word.delete("1.0", "end")
+                text_meaning.delete("1.0", "end")
+                update_word = words.loc[words.index[word_index], 'eng']
+                text_word.insert(END, update_word)
+                next_state = 1
+                update_status()
+            else:
+                # print all the hun meanings in new lines
+                update_meaning = ""
+                for i in words.loc[words.index[word_index], 'hun']:
+                    update_meaning = update_meaning + i + "\n"
+                text_meaning.insert(END, update_meaning)
+                next_state = 0
+                word_index += 1
 
 
 def reset_order():
     global next_state
     global word_index
     global random_mode
+    global mistake
     word_index = 0
     next_state = 0
     if random_mode == "full":
@@ -205,6 +216,7 @@ def reset_order():
         decrease_rand()
     text_word.delete("1.0", "end")
     text_meaning.delete("1.0", "end")
+    mistake = 0
     update_status()
 
 
@@ -240,8 +252,10 @@ def inc_score():
 
 def dec_score():
     global words
+    global mistake
     if next_state == 0:
         words.loc[words.index[word_index-1], 'score'] = words.loc[words.index[word_index-1], 'score'] - 1
+        mistake = mistake + 1
     next_word()
 
 
