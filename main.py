@@ -2,9 +2,11 @@ import word as wd
 from tkinter import *
 import random
 import pandas as pd
+from collections import deque
 
 # global variables
 mistake = 0
+prevs = deque([], 2)
 
 # gui
 top = Tk()
@@ -162,11 +164,15 @@ def next_word():
                 update_word = ""
                 for i in words.loc[words.index[word_index], 'hun']:
                     update_word = update_word + i + "\n"
+                for i in list(prevs):
+                    update_word = update_word + words.loc[words.index[i[0]], 'hun'][0] + "\n"
                 text_word.insert(END, update_word)
                 next_state = 1
                 update_status()
             else:
                 update_meaning = words.loc[words.index[word_index], 'eng']
+                for i in list(prevs):
+                    update_meaning += words.loc[words.index[i], 'eng'] + "\n"
                 text_meaning.insert(END, update_meaning)
                 next_state = 0
                 word_index += 1
@@ -253,9 +259,11 @@ def inc_score():
 def dec_score():
     global words
     global mistake
+    global prevs
     if next_state == 0:
         words.loc[words.index[word_index-1], 'score'] = words.loc[words.index[word_index-1], 'score'] - 1
         mistake = mistake + 1
+        prevs.append([word_index-1])
     next_word()
 
 
