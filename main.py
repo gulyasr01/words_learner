@@ -105,12 +105,12 @@ opts_rand.set("Random")
 
 # text_word displays the actual word
 text_word = Text(top)
-text_word.config(height=6, width=20)
+text_word.config(height=6, width=30)
 text_word.grid(row=2, column=1, rowspan=4)
 
 # text_word displays the actual word meaning
 text_meaning = Text(top)
-text_meaning.config(height=6, width=20)
+text_meaning.config(height=6, width=30)
 text_meaning.grid(row=2, column=2, rowspan=4)
 
 # text_status displays some information about the current interogation
@@ -159,7 +159,7 @@ def next_word():
         if disp_mode == "hun_all":
             if next_state == 0:
                 text_word.delete("1.0", "end")
-                text_meaning.delete("1.0", "end")
+                # text_meaning.delete("1.0", "end")
                 # print all the hun meanings in new lines
                 update_word = ""
                 for i in words.loc[words.index[word_index], 'hun']:
