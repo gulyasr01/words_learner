@@ -2,12 +2,16 @@ import word as wd
 from tkinter import *
 import random
 import pandas as pd
+from collections import deque
 
 # global variables
 mistake = 0
 
 # gui
 top = Tk()
+
+# fifo for the latest mistakes
+fifo = [-1, -1]
 
 
 # menu to select the actual dataset
@@ -103,19 +107,37 @@ opts_rand.set("Random")
 
 # text_word displays the actual word
 text_word = Text(top)
-text_word.config(height=6, width=20)
-text_word.grid(row=2, column=1, rowspan=4)
+text_word.config(height=4, width=30)
+text_word.grid(row=2, column=1, rowspan=2)
 
 # text_word displays the actual word meaning
 text_meaning = Text(top)
-text_meaning.config(height=6, width=20)
-text_meaning.grid(row=2, column=2, rowspan=4)
+text_meaning.config(height=4, width=30)
+text_meaning.grid(row=2, column=2, rowspan=2)
 
 # text_status displays some information about the current interogation
 text_status = Text(top)
-text_status.config(height=6, width=20)
+text_status.config(height=8, width=20)
 text_status.grid(row=2, column=3, rowspan=4)
 text_status.insert(END, "Create or load!")
+
+# text_miss1 displays tha last wrong answer
+text_miss1 = Text(top)
+text_miss1.config(height=4, width=30)
+text_miss1.grid(row=5, column=1)
+
+text_miss1_mean = Text(top)
+text_miss1_mean.config(height=4, width=30)
+text_miss1_mean.grid(row=5, column=2)
+
+# text_miss1 displays tha second last wrong answer
+text_miss2 = Text(top)
+text_miss2.config(height=4, width=30)
+text_miss2.grid(row=6, column=1)
+
+text_miss2_mean = Text(top)
+text_miss2_mean.config(height=4, width=30)
+text_miss2_mean.grid(row=6, column=2)
 
 
 def update_status():
@@ -130,6 +152,49 @@ def update_status():
                        + "\nMiss: " + str(mistake))
 
 
+def update_mistakes():
+    if fifo[0] == -1:
+        text_miss1.delete("1.0", "end")
+        text_miss1.insert(END, "None yet!")
+        text_miss1_mean.delete("1.0", "end")
+        text_miss1_mean.insert(END, "None yet!")
+    else:
+        text_miss1.delete("1.0", "end")
+        text_miss1_mean.delete("1.0", "end")
+        if disp_mode == "eng":
+            text_miss1.insert(END, words.loc[words.index[fifo[0]], 'eng'])
+            update_meaning = ""
+            for i in words.loc[words.index[fifo[0]], 'hun']:
+                update_meaning = update_meaning + i + "\n"
+            text_miss1_mean.insert(END, update_meaning)
+        else:
+            update_meaning = ""
+            for i in words.loc[words.index[fifo[0]], 'hun']:
+                update_meaning = update_meaning + i + "\n"
+            text_miss1.insert(END, update_meaning)
+            text_miss1_mean.insert(END, words.loc[words.index[fifo[0]], 'eng'])
+    if fifo[1] == -1:
+        text_miss2.delete("1.0", "end")
+        text_miss2.insert(END, "None yet!")
+        text_miss2_mean.delete("1.0", "end")
+        text_miss2_mean.insert(END, "None yet!")
+    else:
+        text_miss2.delete("1.0", "end")
+        text_miss2_mean.delete("1.0", "end")
+        if disp_mode == "eng":
+            text_miss2.insert(END, words.loc[words.index[fifo[1]], 'eng'])
+            update_meaning = ""
+            for i in words.loc[words.index[fifo[1]], 'hun']:
+                update_meaning = update_meaning + i + "\n"
+            text_miss2_mean.insert(END, update_meaning)
+        else:
+            update_meaning = ""
+            for i in words.loc[words.index[fifo[1]], 'hun']:
+                update_meaning = update_meaning + i + "\n"
+            text_miss2.insert(END, update_meaning)
+            text_miss2_mean.insert(END, words.loc[words.index[fifo[1]], 'eng'])
+
+
 # labels
 label_ask = Label(top, text="Asking:")
 label_ask.grid(row=1, column=1)
@@ -139,6 +204,9 @@ label_mean.grid(row=1, column=2)
 
 label_status = Label(top, text="Status:")
 label_status.grid(row=1, column=3)
+
+label_misses = Label(top, text="Last mistakes:")
+label_misses.grid(row=4, column=1, columnspan=2)
 
 next_state = 0
 word_index = 0
@@ -165,6 +233,7 @@ def next_word():
                 text_word.insert(END, update_word)
                 next_state = 1
                 update_status()
+                update_mistakes()
             else:
                 update_meaning = words.loc[words.index[word_index], 'eng']
                 text_meaning.insert(END, update_meaning)
@@ -180,6 +249,7 @@ def next_word():
                 text_word.insert(END, update_word)
                 next_state = 1
                 update_status()
+                update_mistakes()
             else:
                 update_meaning = words.loc[words.index[word_index], 'eng']
                 text_meaning.insert(END, update_meaning)
@@ -193,6 +263,7 @@ def next_word():
                 text_word.insert(END, update_word)
                 next_state = 1
                 update_status()
+                update_mistakes()
             else:
                 # print all the hun meanings in new lines
                 update_meaning = ""
@@ -256,6 +327,8 @@ def dec_score():
     if next_state == 0:
         words.loc[words.index[word_index-1], 'score'] = words.loc[words.index[word_index-1], 'score'] - 1
         mistake = mistake + 1
+        fifo[1] = fifo[0]
+        fifo[0] = word_index-1
     next_word()
 
 
