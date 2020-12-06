@@ -21,4 +21,5 @@ def create_df():
     df = pd.DataFrame(eng, columns=['eng'])
     df['hun'] = hun
     df['score'] = int(0)
+    df = df.drop_duplicates(subset='eng', keep='first')
     return df
