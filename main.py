@@ -226,7 +226,7 @@ def next_word():
         if disp_mode == "hun_all":
             if next_state == 0:
                 text_word.delete("1.0", "end")
-                # text_meaning.delete("1.0", "end")
+                text_meaning.delete("1.0", "end")
                 # print all the hun meanings in new lines
                 update_word = ""
                 for i in words.loc[words.index[word_index], 'hun']:
